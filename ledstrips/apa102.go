@@ -44,12 +44,3 @@ func (ledStrip *apa102) SetLed(i int, rgba color.RGBA) {
 	ledStrip.driver.SetRGBA(i, rgba)
 }
 
-/*func (ledStrip *apa102) Test() {
-	ledStrip.Fill(colornames.Red)
-	time.Sleep(100 * time.Millisecond)
-	ledStrip.Fill(colornames.Green)
-	time.Sleep(100 * time.Millisecond)
-	ledStrip.Fill(colornames.Blue)
-	time.Sleep(100 * time.Millisecond)
-	ledStrip.Fill(colornames.Black)
-}*/
