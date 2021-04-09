@@ -19,6 +19,12 @@ func NewLedStripController(ledStripService *services.LedStripService) *LedStripC
 	return &l
 }
 
+func (ledStripController *LedStripController) toggle(w http.ResponseWriter, _ *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	ledStripController.ledStripService.Toggle()
+	json.NewEncoder(w).Encode("TOGGLED")
+}
+
 func (ledStripController *LedStripController) turnOff(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	ledStripController.ledStripService.Stop()
@@ -34,6 +40,7 @@ func (ledStripController *LedStripController) turnOn(w http.ResponseWriter, _ *h
 
 func (ledStripController *LedStripController) initialize() {
 	r := mux.NewRouter()
+	r.HandleFunc("/toggle", ledStripController.toggle).Methods("GET")
 	r.HandleFunc("/off", ledStripController.turnOff).Methods("GET")
 	r.HandleFunc("/on", ledStripController.turnOn).Methods("GET")
 	log.Fatal(http.ListenAndServe(":8080", r))

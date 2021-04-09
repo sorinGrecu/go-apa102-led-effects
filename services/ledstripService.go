@@ -52,6 +52,14 @@ func (stripService *LedStripService) Stop() {
 	stripService.state <- false
 }
 
+func (stripService *LedStripService) Toggle() {
+	if stripService.running == true {
+		stripService.state <- false
+	} else {
+		stripService.state <- true
+	}
+}
+
 func (stripService *LedStripService) Test() {
 	stripService.LedStrip.Fill(colornames.Red)
 	time.Sleep(200 * time.Millisecond)
