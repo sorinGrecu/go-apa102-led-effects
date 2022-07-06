@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"go-led-strip/controller"
+	"go-led-strip/triggers"
 	"go-led-strip/effects"
 	"go-led-strip/ledstrips"
 	"go-led-strip/services"
@@ -30,6 +31,7 @@ func Initialize(ledStripConfigPath, effectsConfigPath string) {
 	service.InitTicker()
 	service.Start()
 	controller.NewLedStripController(service)
+	triggers.NewSwitchTrigger(service)
 }
 
 func initializeLedStrip(config *config.LedStripConfig) ledstrips.LedStrip {
