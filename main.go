@@ -30,8 +30,8 @@ func Initialize(ledStripConfigPath, effectsConfigPath string) {
 	service.Test()
 	service.InitTicker()
 	service.Start()
-	controller.NewLedStripController(service)
 	triggers.NewSwitchTrigger(service)
+	controller.NewLedStripController(service)
 }
 
 func initializeLedStrip(config *config.LedStripConfig) ledstrips.LedStrip {

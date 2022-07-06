@@ -43,5 +43,5 @@ func (ledStripController *LedStripController) initialize() {
 	r.HandleFunc("/toggle", ledStripController.toggle).Methods("GET")
 	r.HandleFunc("/off", ledStripController.turnOff).Methods("GET")
 	r.HandleFunc("/on", ledStripController.turnOn).Methods("GET")
-	log.Fatal(http.ListenAndServe(":8080", r))
+	log.Fatal(http.ListenAndServe(":8081", r))
 }
