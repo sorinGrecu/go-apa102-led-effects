@@ -22,7 +22,9 @@ func NewSwitchTrigger(ledStripService *services.LedStripService) *SwitchTrigger 
 func (switchTrigger *SwitchTrigger) initialize() {
         fmt.Println("Reed Switch initialized")
         r := raspi.NewAdaptor()
-        button := gpio.NewButtonDriver(r, "40")
+
+        // 31 for the Raspberry Pi 3 B+ as it h
+        button := gpio.NewButtonDriver(r, "31")
 
         work := func() {
                 button.On(gpio.ButtonPush, func(data interface{}) {
@@ -31,7 +33,7 @@ func (switchTrigger *SwitchTrigger) initialize() {
                 })
 
                 button.On(gpio.ButtonRelease, func(data interface{}) {
-                	    switchTrigger.ledStripService.Stop()
+                        switchTrigger.ledStripService.Stop()
                 	    switchTrigger.ledStripService.LedStrip.Fill(colornames.Black)
                         fmt.Println("Drawer closed")
                 })
