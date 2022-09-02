@@ -37,7 +37,7 @@ func (stripService *LedStripService) InitTicker() {
 					}
 					stripService.LedStrip.Paint()
 				}
-			case stripService.running = <-stripService.state:
+			case stripService.running := <-stripService.state:
 				fmt.Println("state:", stripService.running)
 			}
 		}
