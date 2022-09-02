@@ -53,10 +53,10 @@ func (stripService *LedStripService) Stop() {
 }
 
 func (stripService *LedStripService) Toggle() {
-	if stripService.running == true {
-		stripService.state <- false
-	} else {
+	if !stripService.running {
 		stripService.state <- true
+	} else {
+		stripService.state <- false
 	}
 }
 

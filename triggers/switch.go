@@ -44,6 +44,8 @@ func (switchTrigger *SwitchTrigger) initialize() {
                 []gobot.Device{button},
                 work,
         )
+	go func() {
+	robot.Start()
+	}()
 
-        robot.Start()
 }

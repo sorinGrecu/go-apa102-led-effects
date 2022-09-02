@@ -6,6 +6,7 @@ import (
 	"go-led-strip/services"
 	"golang.org/x/image/colornames"
 	"log"
+	"fmt"
 	"net/http"
 )
 
@@ -43,6 +44,6 @@ func (ledStripController *LedStripController) initialize() {
 	r.HandleFunc("/toggle", ledStripController.toggle).Methods("GET")
 	r.HandleFunc("/off", ledStripController.turnOff).Methods("GET")
 	r.HandleFunc("/on", ledStripController.turnOn).Methods("GET")
-	go func() {
-	log.Fatal(http.ListenAndServe(":8081", r))}()
+	fmt.Println("Launching http and listening..")
+	log.Fatal(http.ListenAndServe(":8081", r))
 }
