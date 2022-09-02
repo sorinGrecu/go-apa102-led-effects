@@ -45,5 +45,5 @@ func (switchTrigger *SwitchTrigger) initialize() {
                 work,
         )
 
-        robot.Start()
+        go robot.Start()
 }
