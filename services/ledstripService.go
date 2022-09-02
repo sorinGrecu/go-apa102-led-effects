@@ -39,25 +39,34 @@ func (stripService *LedStripService) InitTicker() {
 				}
 			case stripService.running = <-stripService.state:
 				fmt.Println("state:", stripService.running)
+				if !stripService.running {
+					stripService.LedStrip.Fill(colornames.Black)
+				}
 			}
 		}
 	}()
 }
 
-func (stripService *LedStripService) Start() {
-	stripService.state <- true
+func (stripService *LedStripService) Start() bool {
+	stripService.running = true
+	stripService.state <- stripService.running
+	return stripService.running
 }
 
-func (stripService *LedStripService) Stop() {
-	stripService.state <- false
+func (stripService *LedStripService) Stop() bool {
+	stripService.running = false
+	stripService.state <- stripService.running
+	return stripService.running
 }
 
-func (stripService *LedStripService) Toggle() {
-	if !stripService.running {
-		stripService.state <- true
-	} else {
-		stripService.state <- false
-	}
+func (stripService *LedStripService) Toggle() bool {
+	stripService.running = !stripService.running
+	stripService.state <- stripService.running
+	return stripService.running
+}
+
+func (stripService *LedStripService) Status() bool {
+	return stripService.running
 }
 
 func (stripService *LedStripService) Test() {

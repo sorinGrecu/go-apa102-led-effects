@@ -4,11 +4,11 @@ import (
 	"flag"
 	"fmt"
 	"go-led-strip/controller"
-	"go-led-strip/triggers"
 	"go-led-strip/effects"
 	"go-led-strip/ledstrips"
 	"go-led-strip/services"
 	"go-led-strip/services/config"
+	"go-led-strip/triggers"
 	"golang.org/x/image/colornames"
 )
 
@@ -30,7 +30,9 @@ func Initialize(ledStripConfigPath, effectsConfigPath string) {
 	service.Test()
 	service.InitTicker()
 	service.Start()
-	triggers.NewSwitchTrigger(service)
+	if stripConfig.StripType != ledstrips.MOCK {
+		triggers.NewSwitchTrigger(service)
+	}
 	controller.NewLedStripController(service)
 }
 
@@ -39,6 +41,9 @@ func initializeLedStrip(config *config.LedStripConfig) ledstrips.LedStrip {
 	case ledstrips.APA102:
 		fmt.Println("Found APA102 led strip with", config.LedCount, "leds")
 		return ledstrips.NewApa102LedStripFromConfig(config)
+	case ledstrips.MOCK:
+		fmt.Println("Mocking led strip with", config.LedCount, "leds")
+		return ledstrips.NewMockLedStripFromConfig(config)
 	}
 	return nil
 }

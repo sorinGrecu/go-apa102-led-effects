@@ -2,16 +2,19 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	"go-led-strip/services"
-	"golang.org/x/image/colornames"
 	"log"
-	"fmt"
 	"net/http"
 )
 
 type LedStripController struct {
 	ledStripService services.LedStripService
+}
+
+type StripPayload struct {
+	Active bool `json:"active"`
 }
 
 func NewLedStripController(ledStripService *services.LedStripService) *LedStripController {
@@ -20,30 +23,60 @@ func NewLedStripController(ledStripService *services.LedStripService) *LedStripC
 	return &l
 }
 
-func (ledStripController *LedStripController) toggle(w http.ResponseWriter, _ *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	ledStripController.ledStripService.Toggle()
-	json.NewEncoder(w).Encode("TOGGLED")
+func (ledStripController *LedStripController) toggle(response http.ResponseWriter, _ *http.Request) {
+	response.Header().Set("Content-Type", "application/json")
+	strip := StripPayload{Active: ledStripController.ledStripService.Toggle()}
+	response.WriteHeader(http.StatusOK)
+	json.NewEncoder(response).Encode(&strip)
 }
 
-func (ledStripController *LedStripController) turnOff(w http.ResponseWriter, _ *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	ledStripController.ledStripService.Stop()
-	ledStripController.ledStripService.LedStrip.Fill(colornames.Black)
-	json.NewEncoder(w).Encode("OFF")
+func (ledStripController *LedStripController) status(response http.ResponseWriter, _ *http.Request) {
+	response.Header().Set("Content-Type", "application/json")
+	strip := StripPayload{Active: ledStripController.ledStripService.Status()}
+	response.WriteHeader(http.StatusOK)
+	json.NewEncoder(response).Encode(&strip)
+}
+
+func (ledStripController *LedStripController) turnOff(response http.ResponseWriter, _ *http.Request) {
+	response.Header().Set("Content-Type", "application/json")
+	strip := StripPayload{Active: ledStripController.ledStripService.Stop()}
+	response.WriteHeader(http.StatusOK)
+	json.NewEncoder(response).Encode(&strip)
 }
 
 func (ledStripController *LedStripController) turnOn(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	ledStripController.ledStripService.Start()
-	json.NewEncoder(w).Encode("ON")
+	json.NewEncoder(w).Encode(ledStripController.ledStripService.Start())
+}
+
+func (ledStripController *LedStripController) handle(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("Content-Type", "application/json")
+	if request.Method == http.MethodPost {
+		var payload StripPayload
+		err := json.NewDecoder(request.Body).Decode(&payload)
+		fmt.Println(payload)
+		if err != nil {
+			log.Fatalln("There was an error decoding the request body into the struct")
+		}
+		if payload.Active {
+			ledStripController.ledStripService.Start()
+		} else {
+			ledStripController.ledStripService.Stop()
+		}
+	}
+	strip := StripPayload{Active: ledStripController.ledStripService.Status()}
+	response.WriteHeader(http.StatusOK)
+	json.NewEncoder(response).Encode(&strip)
 }
 
 func (ledStripController *LedStripController) initialize() {
 	r := mux.NewRouter()
-	r.HandleFunc("/toggle", ledStripController.toggle).Methods("GET")
-	r.HandleFunc("/off", ledStripController.turnOff).Methods("GET")
-	r.HandleFunc("/on", ledStripController.turnOn).Methods("GET")
+	r.HandleFunc("/ledstrip", ledStripController.handle).Methods(http.MethodPost, http.MethodGet)
+	r.HandleFunc("/status", ledStripController.status).Methods(http.MethodGet)
+	r.HandleFunc("/toggle", ledStripController.toggle).Methods(http.MethodGet)
+	r.HandleFunc("/off", ledStripController.turnOff).Methods(http.MethodGet)
+	r.HandleFunc("/on", ledStripController.turnOn).Methods(http.MethodGet)
+
 	fmt.Println("Launching http and listening..")
 	log.Fatal(http.ListenAndServe(":8081", r))
 }

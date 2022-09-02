@@ -3,6 +3,7 @@ package ledstrips
 import "image/color"
 
 const APA102 = "APA102"
+const MOCK = "MOCK"
 
 type LedStrip interface {
 	Fill(rgba color.RGBA)
